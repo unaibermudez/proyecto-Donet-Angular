@@ -1,0 +1,93 @@
+<h2>Búsqueda semántica</h2>
+
+<p class="intro">
+  Busca por significado en los documentos, sin LLM: la pregunta se convierte en un vector y se
+  devuelven los fragmentos con el vector más parecido. Es lo que el asistente leerá antes de
+  responder.
+</p>
+
+<form [formGroup]="form" (ngSubmit)="search()" novalidate>
+  <div class="field question">
+    <label for="question">Pregunta</label>
+    <input
+      id="question"
+      type="text"
+      formControlName="question"
+      placeholder="¿Cuánto dura la garantía?"
+      [attr.aria-invalid]="questionError() ? true : null"
+      [attr.aria-describedby]="questionError() ? 'question-error' : null"
+    />
+    @if (questionError(); as message) {
+      <p id="question-error" class="field-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="options">
+    <div class="field">
+      <label for="productId">Buscar en</label>
+      <select id="productId" formControlName="productId">
+        <option [ngValue]="null">Todos los documentos</option>
+        @for (product of products(); track product.id) {
+          <option [ngValue]="product.id">{{ product.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="topK">Resultados</label>
+      <select id="topK" formControlName="topK">
+        @for (option of topKOptions; track option) {
+          <option [ngValue]="option">{{ option }}</option>
+        }
+      </select>
+    </div>
+
+    <button type="submit" class="button button-primary" [disabled]="searching()">
+      {{ searching() ? 'Buscando…' : 'Buscar' }}
+    </button>
+  </div>
+
+  <div class="examples">
+    <span>Ejemplos:</span>
+    @for (example of exampleQuestions; track example) {
+      <button type="button" class="example" (click)="useExample(example)">{{ example }}</button>
+    }
+  </div>
+</form>
+
+@if (errors().length > 0) {
+  <div class="error" role="alert">
+    @for (message of errors(); track $index) {
+      <p>{{ message }}</p>
+    }
+  </div>
+}
+
+@if (response(); as result) {
+  <section aria-labelledby="results-title" aria-live="polite">
+    <h3 id="results-title">
+      {{ result.results.length }} fragmentos para «{{ result.question }}»
+      <span class="elapsed">({{ result.elapsedMilliseconds }} ms)</span>
+    </h3>
+
+    @for (item of result.results; track item.chunkId; let position = $index) {
+      <article class="result">
+        <header>
+          <span class="position">#{{ position + 1 }}</span>
+          <span class="file">{{ item.fileName }}</span>
+          <span class="product">{{ item.productName ?? 'General' }}</span>
+          <span class="chunk">fragmento {{ item.chunkIndex }}</span>
+          <span class="similarity">
+            <span class="bar" [style.width.%]="barWidth(item.similarity)"></span>
+            <span class="value">
+              <span class="visually-hidden">Similitud </span>{{ percentage(item.similarity) }}
+            </span>
+          </span>
+        </header>
+        <p class="content">{{ item.content }}</p>
+      </article>
+    } @empty {
+      <p>No hay fragmentos. ¿Se han procesado los documentos?</p>
+    }
+  </section>
+}

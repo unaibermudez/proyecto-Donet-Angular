@@ -30,7 +30,9 @@ public sealed class OllamaOptions
     public string EmbeddingModel { get; set; } = "";
 
     // nomic-embed-text da mejores resultados si al texto que se guarda se le antepone
-    // "search_document: " (y a las preguntas "search_query: ", en el paso 9).
+    // "search_document: ", y a las preguntas "search_query: ".
     // Depende del modelo: con otro puede ir vacío.
     public string EmbeddingDocumentPrefix { get; set; } = "";
+
+    public string EmbeddingQueryPrefix { get; set; } = "";
 }

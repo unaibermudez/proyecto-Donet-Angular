@@ -26,4 +26,10 @@ export const routes: Routes = [
       import('./features/documents/document-list/document-list').then((m) => m.DocumentList),
     title: 'Documentos · Tienda Tech',
   },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./features/search/search-page/search-page').then((m) => m.SearchPage),
+    title: 'Búsqueda · Tienda Tech',
+  },
 ];

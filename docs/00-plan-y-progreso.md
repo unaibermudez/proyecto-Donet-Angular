@@ -9,9 +9,9 @@ mensaje en formato Conventional Commits, y está subido a GitHub.
 
 ## Progreso
 
-**8 de 12 pasos completados**
+**9 de 12 pasos completados**
 
-`████████████████████░░░░░░░░░░` 67 %
+`███████████████████████░░░░░░░` 75 %
 
 ---
 
@@ -168,7 +168,7 @@ troceador, que es código puro sin IA.
 
 ---
 
-### [ ] 9 — Búsqueda semántica (todavía sin LLM)
+### [x] 9 — Búsqueda semántica (todavía sin LLM)
 
 Endpoint `POST /api/search` que genera el embedding de la pregunta y devuelve los
 `k` fragmentos más parecidos por distancia coseno, con su puntuación de
@@ -177,6 +177,8 @@ similitud.
 **Por qué este paso separado:** aislar la recuperación antes de meter el LLM es lo
 que hace que el RAG se pueda depurar. Si las respuestas salen mal, aquí se ve si
 el problema es la búsqueda o el *prompt*.
+
+> 📄 [`09-busqueda-semantica.md`](09-busqueda-semantica.md) · 73 tests de backend y 37 de frontend en verde · probada con Ollama real (~40 ms por búsqueda)
 
 ---
 

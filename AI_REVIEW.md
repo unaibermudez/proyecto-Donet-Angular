@@ -231,3 +231,15 @@ El objetivo no es demostrar que la IA se equivoca, sino demostrar el hábito de
   arrancar.
 - **Qué aprendí:** revisar siempre las migraciones generadas antes de aplicarlas, sobre
   todo cuando añaden columnas obligatorias a tablas con datos.
+
+### 15 - Diagnóstico precipitado de un 400 en la prueba manual  (paso 9)
+- **Qué se generó:** para probar `/api/search` contra Ollama, el asistente lanzó las
+  preguntas con `curl -d` desde Git Bash.
+- **Qué problema tenía:** todas las preguntas con `¿` o tildes devolvieron 400 sin
+  detalle. No era un fallo de la API: Git Bash en Windows pasaba esos caracteres con la
+  codificación de Windows y no en UTF-8, así que el JSON llegaba roto. La única pregunta
+  sin tildes ("ab") sí se validó bien.
+- **Cómo se corrigió:** se repitieron las pruebas con `fetch` de Node, que siempre envía
+  UTF-8, y todas funcionaron. El código de la API no se tocó.
+- **Qué aprendí:** ante un error raro, comprobar primero la herramienta de prueba. En la
+  documentación, el ejemplo de PowerShell indica `charset=utf-8` por este motivo.

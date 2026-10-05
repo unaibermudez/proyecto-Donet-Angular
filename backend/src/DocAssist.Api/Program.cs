@@ -3,6 +3,7 @@ using DocAssist.Api.Data;
 using DocAssist.Api.Features.Documents;
 using DocAssist.Api.Features.Documents.Ingestion;
 using DocAssist.Api.Features.Products;
+using DocAssist.Api.Features.Search;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
@@ -88,6 +89,9 @@ builder.Services.AddSingleton<DocumentIngestionQueue>();
 builder.Services.AddScoped<DocumentIngestionService>();
 builder.Services.AddHostedService<DocumentIngestionWorker>();
 
+// Búsqueda semántica (scoped: usa el DbContext).
+builder.Services.AddScoped<SemanticSearchService>();
+
 // La comprobación de la base de datos lleva la etiqueta "ready" para que
 // solo la ejecute /health/ready (ver abajo).
 builder.Services.AddHealthChecks()
@@ -144,6 +148,7 @@ app.MapGet("/api/info", (IConfiguration config, IHostEnvironment env) =>
 
 app.MapProductEndpoints();
 app.MapDocumentEndpoints();
+app.MapSearchEndpoints();
 
 app.Run();
 
