@@ -140,6 +140,7 @@ y las decisiones tomadas.
 | 05 | [Frontend Angular y lista de productos](docs/05-frontend-angular-y-lista.md) | Standalone components, proxy de desarrollo, inyección de dependencias, `HttpClient` y Observables, signals, `@if`/`@for`, lazy loading, tests con `HttpTestingController` |
 | 06 | [Formularios reactivos](docs/06-formularios-reactivos.md) | `FormGroup` tipado, `Validators` y validadores propios, errores accesibles, `input()` desde la ruta, borrado con confirmación, tests de componentes con `TestBed` |
 | 07 | [Subida de documentos](docs/07-subida-de-documentos.md) | `multipart/form-data`, `IFormFile`, validación del contenido, almacenamiento en disco tras una interfaz, options pattern, relación uno a muchos opcional, `output()` y `viewChild` en Angular |
+| 08 | [Ingesta y embeddings](docs/08-ingesta-y-embeddings.md) | Embeddings, troceado con solapamiento, pgvector e índice HNSW, `Microsoft.Extensions.AI` con Ollama, `BackgroundService` y `Channel`, 202 Accepted y polling |
 
 ## Revisión crítica del código generado con IA
 

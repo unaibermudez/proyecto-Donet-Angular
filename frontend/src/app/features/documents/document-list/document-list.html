@@ -1,8 +1,9 @@
 <h2>Documentos</h2>
 
 <p class="intro">
-  Manuales de los productos y documentos generales de la tienda (garantía, devoluciones, envíos).
-  Serán la base de conocimiento del asistente.
+  Manuales de los productos y documentos generales de la tienda (garantía, devoluciones, envíos). Al
+  subirlos se trocean y se convierten en vectores (embeddings) para que el asistente pueda buscar en
+  ellos.
 </p>
 
 <app-document-upload (uploaded)="onUploaded($event)" />
@@ -12,10 +13,10 @@
 } @else if (error()) {
   <p class="error" role="alert">{{ error() }}</p>
 } @else {
-  <p>{{ documentCount() }} documentos</p>
+  <p>{{ documentCount() }} documentos, {{ readyCount() }} listos para el asistente</p>
 
-  @if (deleteError()) {
-    <p class="error" role="alert">{{ deleteError() }}</p>
+  @if (actionError()) {
+    <p class="error" role="alert">{{ actionError() }}</p>
   }
 
   <table>
@@ -25,6 +26,7 @@
         <th scope="col">Producto</th>
         <th scope="col" class="number">Tamaño</th>
         <th scope="col">Subido</th>
+        <th scope="col">Estado</th>
         <th scope="col"><span class="visually-hidden">Acciones</span></th>
       </tr>
     </thead>
@@ -37,7 +39,24 @@
           <td>{{ document.productName ?? 'General' }}</td>
           <td class="number">{{ document.sizeBytes | fileSize }}</td>
           <td>{{ document.uploadedAt | date: 'short' }}</td>
+          <td>
+            <span [class]="'status status-' + document.status.toLowerCase()">
+              {{ statusLabels[document.status] }}
+            </span>
+            @if (document.statusMessage) {
+              <p class="status-message">{{ document.statusMessage }}</p>
+            }
+          </td>
           <td class="actions">
+            <button
+              type="button"
+              class="button"
+              [disabled]="isInProgress(document.status)"
+              [attr.aria-label]="'Reprocesar ' + document.fileName"
+              (click)="reprocess(document)"
+            >
+              Reprocesar
+            </button>
             <button
               type="button"
               class="button button-danger"
@@ -51,7 +70,7 @@
         </tr>
       } @empty {
         <tr>
-          <td colspan="5">Todavía no hay documentos.</td>
+          <td colspan="6">Todavía no hay documentos.</td>
         </tr>
       }
     </tbody>

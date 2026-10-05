@@ -1,6 +1,9 @@
 using DocAssist.Api.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +33,13 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
                 ["ConnectionStrings:Default"] = _postgres.GetConnectionString(),
                 ["DocumentStorage:RootPath"] = StoragePath
             }));
+
+        // Los tests no dependen de Ollama: los embeddings los genera un sustituto.
+        builder.ConfigureTestServices(services =>
+        {
+            services.RemoveAll<IEmbeddingGenerator<string, Embedding<float>>>();
+            services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>, FakeEmbeddingGenerator>();
+        });
     }
 
     public async Task InitializeAsync()

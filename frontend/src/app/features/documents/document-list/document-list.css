@@ -24,9 +24,50 @@ th {
 }
 
 .actions {
+  white-space: nowrap;
   text-align: right;
+}
+
+.actions .button + .button {
+  margin-left: 0.5rem;
 }
 
 .error {
   color: #b91c1c;
+}
+
+/* Etiqueta de estado. Colores con contraste AA sobre su fondo. */
+.status {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.status-pending {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+.status-processing {
+  color: #1e40af;
+  background: #dbeafe;
+}
+
+.status-ready {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.status-failed {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.status-message {
+  max-width: 260px;
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: #991b1b;
 }

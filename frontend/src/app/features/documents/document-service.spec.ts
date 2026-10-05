@@ -16,6 +16,8 @@ describe('DocumentService', () => {
     uploadedAt: '2026-10-05T16:00:00Z',
     productId: null,
     productName: null,
+    status: 'Ready',
+    statusMessage: null,
   };
 
   beforeEach(() => {
@@ -66,6 +68,17 @@ describe('DocumentService', () => {
     const req = httpMock.expectOne('/api/documents');
     expect((req.request.body as FormData).has('productId')).toBe(false);
     req.flush(document);
+  });
+
+  it('ingest hace POST a /api/documents/{id}/ingest', () => {
+    let received: UploadedDocument | undefined;
+
+    service.ingest(1).subscribe((result) => (received = result));
+
+    const req = httpMock.expectOne('/api/documents/1/ingest');
+    expect(req.request.method).toBe('POST');
+    req.flush({ ...document, status: 'Pending' }, { status: 202, statusText: 'Accepted' });
+    expect(received?.status).toBe('Pending');
   });
 
   it('delete hace DELETE a /api/documents/{id}', () => {

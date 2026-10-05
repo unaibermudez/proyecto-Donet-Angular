@@ -24,4 +24,11 @@ public class Document
     public int? ProductId { get; set; }
 
     public Product? Product { get; set; }
+
+    public DocumentStatus Status { get; set; } = DocumentStatus.Pending;
+
+    // Por qué falló la ingesta. Solo tiene valor si Status es Failed.
+    public string? StatusMessage { get; set; }
+
+    public List<DocumentChunk> Chunks { get; } = [];
 }

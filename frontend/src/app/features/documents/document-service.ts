@@ -27,6 +27,12 @@ export class DocumentService {
     return this.http.post<UploadedDocument>(this.baseUrl, form);
   }
 
+  // Vuelve a trocear el documento y generar sus embeddings. Responde al momento (202)
+  // con el documento en estado Pending; el trabajo sigue en el servidor.
+  ingest(id: number): Observable<UploadedDocument> {
+    return this.http.post<UploadedDocument>(`${this.baseUrl}/${id}/ingest`, null);
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }

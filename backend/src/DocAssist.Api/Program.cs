@@ -1,9 +1,13 @@
 using System.Text.Json.Serialization;
 using DocAssist.Api.Data;
 using DocAssist.Api.Features.Documents;
+using DocAssist.Api.Features.Documents.Ingestion;
 using DocAssist.Api.Features.Products;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
+using OllamaSharp;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,7 +41,8 @@ builder.Services.AddProblemDetails(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options
-        .UseNpgsql(builder.Configuration.GetConnectionString("Default"))
+        // UseVector: permite mapear las columnas vector de pgvector.
+        .UseNpgsql(builder.Configuration.GetConnectionString("Default"), npgsql => npgsql.UseVector())
         .UseSnakeCaseNamingConvention();
 
     // Datos de ejemplo solo en desarrollo. Se insertan al aplicar las migraciones.
@@ -58,6 +63,30 @@ builder.Services.AddOptions<DocumentStorageOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 builder.Services.AddSingleton<IDocumentStorage, LocalDocumentStorage>();
+
+// Ingesta: troceado (sección Ingestion) y embeddings con Ollama (sección Ollama).
+builder.Services.AddOptions<IngestionOptions>()
+    .Bind(builder.Configuration.GetSection(IngestionOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddOptions<OllamaOptions>()
+    .Bind(builder.Configuration.GetSection(OllamaOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+// IEmbeddingGenerator es la abstracción de Microsoft.Extensions.AI. OllamaApiClient la
+// implementa; para usar OpenAI o Azure OpenAI solo cambiaría esta línea.
+builder.Services.AddEmbeddingGenerator<string, Embedding<float>>(services =>
+{
+    var ollama = services.GetRequiredService<IOptions<OllamaOptions>>().Value;
+    return new OllamaApiClient(ollama.Endpoint, ollama.EmbeddingModel);
+});
+
+// La cola es singleton (la comparten los endpoints y el worker). El servicio de ingesta
+// es scoped porque usa el DbContext. El worker arranca y se para con la aplicación.
+builder.Services.AddSingleton<DocumentIngestionQueue>();
+builder.Services.AddScoped<DocumentIngestionService>();
+builder.Services.AddHostedService<DocumentIngestionWorker>();
 
 // La comprobación de la base de datos lleva la etiqueta "ready" para que
 // solo la ejecute /health/ready (ver abajo).

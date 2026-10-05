@@ -21,6 +21,8 @@ describe('DocumentUpload', () => {
     uploadedAt: '2026-10-05T16:00:00Z',
     productId: 3,
     productName: 'Galaxy S25',
+    status: 'Pending',
+    statusMessage: null,
   };
 
   beforeEach(async () => {

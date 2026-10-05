@@ -1,5 +1,6 @@
 using DocAssist.Api.Data;
 using DocAssist.Api.Domain;
+using DocAssist.Api.Features.Documents.Ingestion;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,12 @@ public static class DocumentEndpoints
         group.MapPost("/", UploadDocument)
             .DisableAntiforgery()
             .WithSummary("Sube un documento (.md o .pdf) como multipart/form-data");
+
+        group.MapPost("/{id:int}/ingest", IngestDocument)
+            .WithSummary("Vuelve a procesar un documento: troceado y embeddings");
+
+        group.MapGet("/{id:int}/chunks", GetDocumentChunks)
+            .WithSummary("Lista los fragmentos en los que se ha troceado un documento");
 
         group.MapDelete("/{id:int}", DeleteDocument)
             .WithSummary("Borra un documento y su fichero");
@@ -98,6 +105,7 @@ public static class DocumentEndpoints
         AppDbContext db,
         IDocumentStorage storage,
         IOptions<DocumentStorageOptions> options,
+        DocumentIngestionQueue ingestionQueue,
         ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
@@ -177,7 +185,61 @@ public static class DocumentEndpoints
             "Document {DocumentId} uploaded: {FileName} ({SizeBytes} bytes, product {ProductId})",
             document.Id, document.FileName, document.SizeBytes, document.ProductId);
 
+        // La ingesta sigue en segundo plano: la respuesta sale ya, con estado Pending.
+        ingestionQueue.Enqueue(document.Id);
+
         return TypedResults.Created($"/api/documents/{document.Id}", DocumentResponse.FromEntity(document));
+    }
+
+    private static async Task<Results<Accepted<DocumentResponse>, NotFound, ProblemHttpResult>> IngestDocument(
+        int id,
+        AppDbContext db,
+        DocumentIngestionQueue ingestionQueue,
+        CancellationToken cancellationToken)
+    {
+        var document = await db.Documents
+            .Include(d => d.Product)
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+        if (document is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        if (document.Status is DocumentStatus.Pending or DocumentStatus.Processing)
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "The document is already waiting to be ingested or being ingested.");
+        }
+
+        document.Status = DocumentStatus.Pending;
+        document.StatusMessage = null;
+        await db.SaveChangesAsync(cancellationToken);
+        ingestionQueue.Enqueue(document.Id);
+
+        // 202 Accepted: la petición se ha aceptado, pero el trabajo todavía no está hecho.
+        // El estado se consulta en la URL del documento.
+        return TypedResults.Accepted($"/api/documents/{document.Id}", DocumentResponse.FromEntity(document));
+    }
+
+    private static async Task<Results<Ok<List<DocumentChunkResponse>>, NotFound>> GetDocumentChunks(
+        int id,
+        AppDbContext db,
+        CancellationToken cancellationToken)
+    {
+        if (!await db.Documents.AnyAsync(d => d.Id == id, cancellationToken))
+        {
+            return TypedResults.NotFound();
+        }
+
+        // Select: solo las columnas que hacen falta, sin traer los vectores.
+        var chunks = await db.DocumentChunks
+            .Where(c => c.DocumentId == id)
+            .OrderBy(c => c.Index)
+            .Select(c => new DocumentChunkResponse(c.Index, c.Content, c.Content.Length))
+            .ToListAsync(cancellationToken);
+
+        return TypedResults.Ok(chunks);
     }
 
     private static async Task<Results<NoContent, NotFound>> DeleteDocument(

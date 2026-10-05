@@ -206,3 +206,28 @@ El objetivo no es demostrar que la IA se equivoca, sino demostrar el hábito de
   extensión de forma explícita (cadena vacía si no hay punto) y se dejó una sola condición.
 - **Qué aprendí:** si una condición existe solo para tapar un caso raro de la línea
   anterior, es mejor arreglar la línea anterior.
+
+### 13 - Paquete de PdfPig con el identificador equivocado  (paso 8)
+- **Qué se generó:** el asistente intentó instalar `UglyToad.PdfPig`, el nombre con el
+  que conocía la librería.
+- **Qué problema tenía:** ese identificador de NuGet ya no se usa: solo tiene una versión
+  preliminar de 2023 con un nombre raro (`1.7.0-custom-5`), que NuGet ofrecía instalar.
+  Las versiones actuales se publican como `PdfPig`.
+- **Cómo se corrigió:** antes de aceptar la versión propuesta, se consultó la API de
+  NuGet, se comprobó que `PdfPig` es del mismo autor y repositorio, y se instaló su
+  última versión estable (0.1.16).
+- **Qué aprendí:** desconfiar de una versión con un nombre extraño y comprobar autor y
+  repositorio antes de instalar un paquete. Es también una defensa contra paquetes
+  maliciosos con nombres parecidos (*typosquatting*).
+
+### 14 - Valor por defecto inválido en la migración generada  (paso 8)
+- **Qué se generó:** `dotnet ef migrations add` añadió la columna `status` a
+  `documents` con `defaultValue: ""`.
+- **Qué problema tenía:** la tabla ya tenía 13 documentos. Con `""`, al leerlos EF Core
+  no habría podido convertir ese texto al enum `DocumentStatus` y la lista de documentos
+  habría fallado.
+- **Cómo se corrigió:** se revisó la migración antes de aplicarla y se cambió el valor por
+  defecto a `"Pending"`. Así, además, el worker procesó los documentos existentes al
+  arrancar.
+- **Qué aprendí:** revisar siempre las migraciones generadas antes de aplicarlas, sobre
+  todo cuando añaden columnas obligatorias a tablas con datos.

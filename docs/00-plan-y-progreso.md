@@ -9,9 +9,9 @@ mensaje en formato Conventional Commits, y está subido a GitHub.
 
 ## Progreso
 
-**7 de 12 pasos completados**
+**8 de 12 pasos completados**
 
-`██████████████████░░░░░░░░░░░░` 58 %
+`████████████████████░░░░░░░░░░` 67 %
 
 ---
 
@@ -153,7 +153,7 @@ en EF Core. *Equivalente a `MultipartFile` en Spring.*
 
 ---
 
-### [ ] 8 — Ingesta: troceado, embeddings y pgvector
+### [x] 8 — Ingesta: troceado, embeddings y pgvector
 
 Extraer el texto de Markdown y PDF, trocearlo en *chunks* con solapamiento,
 generar los embeddings con `IEmbeddingGenerator` apuntando a Ollama, y guardarlos
@@ -163,6 +163,8 @@ troceador, que es código puro sin IA.
 
 **Conceptos nuevos:** chunking y solapamiento, embeddings, `Microsoft.Extensions.AI`,
 índices vectoriales. *El corazón del RAG.*
+
+> 📄 [`08-ingesta-y-embeddings.md`](08-ingesta-y-embeddings.md) · 66 tests de backend y 32 de frontend en verde · migración `AddDocumentChunks` aplicada · 13 documentos procesados (37 fragmentos)
 
 ---
 

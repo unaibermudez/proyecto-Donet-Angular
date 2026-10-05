@@ -1,3 +1,18 @@
+// Estados de la ingesta. Reflejan DocumentStatus del backend.
+export type DocumentStatus = 'Pending' | 'Processing' | 'Ready' | 'Failed';
+
+export const statusLabels: Record<DocumentStatus, string> = {
+  Pending: 'Pendiente',
+  Processing: 'Procesando',
+  Ready: 'Listo',
+  Failed: 'Error',
+};
+
+// Mientras está en uno de estos estados, la ingesta no ha terminado.
+export function isInProgress(status: DocumentStatus): boolean {
+  return status === 'Pending' || status === 'Processing';
+}
+
 // Lo que devuelve /api/documents. Refleja DocumentResponse del backend.
 // No se llama Document para no confundirlo con el Document del DOM (window.document).
 export interface UploadedDocument {
@@ -8,6 +23,8 @@ export interface UploadedDocument {
   uploadedAt: string;
   productId: number | null;
   productName: string | null;
+  status: DocumentStatus;
+  statusMessage: string | null;
 }
 
 // Mismas reglas que DocumentFileRules y DocumentStorage:MaxFileSizeMegabytes en el

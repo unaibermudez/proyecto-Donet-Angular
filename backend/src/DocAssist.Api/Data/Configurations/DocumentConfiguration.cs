@@ -13,6 +13,11 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
         builder.Property(d => d.StoredFileName).HasMaxLength(100);
         builder.HasIndex(d => d.StoredFileName).IsUnique();
 
+        builder.Property(d => d.Status)
+            .HasConversion<string>()
+            .HasMaxLength(20);
+        builder.Property(d => d.StatusMessage).HasMaxLength(1000);
+
         // Uno a muchos opcional: un producto tiene varios documentos y un documento
         // tiene como mucho un producto. Si se borra el producto, sus documentos se
         // quedan como generales (product_id = NULL) en lugar de borrarse.
