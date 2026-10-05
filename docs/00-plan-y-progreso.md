@@ -9,9 +9,9 @@ mensaje en formato Conventional Commits, y está subido a GitHub.
 
 ## Progreso
 
-**4 de 12 pasos completados**
+**5 de 12 pasos completados**
 
-`██████████░░░░░░░░░░░░░░░░░░░░` 33 %
+`████████████░░░░░░░░░░░░░░░░░░` 42 %
 
 ---
 
@@ -100,7 +100,7 @@ tests de integración de los endpoints contra Postgres con Testcontainers.
 
 ---
 
-### [ ] 5 — Frontend Angular: proyecto, routing y lista de productos
+### [x] 5 — Frontend Angular: proyecto, routing y lista de productos
 
 Crear la app Angular con standalone components, configurar `provideHttpClient` y
 el routing, un `ProductService` inyectable, signals para el estado, y una tabla
@@ -116,10 +116,10 @@ un hook `useProducts`; signals frente a `useState`.*
 - [x] 4. Modelo `Product` y `provideHttpClient()`
 - [x] 5. `ProductService`
 - [x] 6. Componente `ProductList` con signals, `@if`/`@for` y ruta *lazy*
-- [ ] 7. Test del `ProductService`
-- [ ] 8. Cierre: documentación y commit final
+- [x] 7. Test del `ProductService`
+- [x] 8. Cierre: documentación y commit final
 
-> 📄 [`05-frontend-angular-y-lista.md`](05-frontend-angular-y-lista.md) · en curso
+> 📄 [`05-frontend-angular-y-lista.md`](05-frontend-angular-y-lista.md) · 4 tests en verde (Vitest)
 
 ---
 

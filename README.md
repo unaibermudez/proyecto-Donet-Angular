@@ -137,7 +137,7 @@ y las decisiones tomadas.
 | 02b | [Cambio de dominio: tienda de tecnología](docs/02b-cambio-de-dominio.md) | Paso al dominio de la tienda, datos estructurados frente a no estructurados, tipos anulables, migraciones en desarrollo y en producción |
 | 03 | [EF Core, PostgreSQL y migraciones](docs/03-ef-core-y-migraciones.md) | `DbContext`, Fluent API, migraciones, *seed*, liveness y readiness |
 | 04 | [CRUD de productos](docs/04-crud-de-productos.md) | Endpoints con `MapGroup`, DTOs, validación de .NET 10, ProblemDetails, logging estructurado, tests |
-| 05 | [Frontend Angular y lista de productos](docs/05-frontend-angular-y-lista.md) | Standalone components, proxy de desarrollo, inyección de dependencias, `HttpClient` y Observables, signals, `@if`/`@for`, lazy loading *(en curso)* |
+| 05 | [Frontend Angular y lista de productos](docs/05-frontend-angular-y-lista.md) | Standalone components, proxy de desarrollo, inyección de dependencias, `HttpClient` y Observables, signals, `@if`/`@for`, lazy loading, tests con `HttpTestingController` |
 
 ## Revisión crítica del código generado con IA
 

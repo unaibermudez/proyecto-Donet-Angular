@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Product } from './product';
 
 // Acceso a la API de productos. Los componentes lo usan en vez de llamar a HTTP directamente.
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = '/api/products';

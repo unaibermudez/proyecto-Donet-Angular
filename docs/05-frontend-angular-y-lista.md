@@ -1,8 +1,5 @@
 # 05 · Frontend Angular: proyecto, routing y lista de productos
 
-> **Estado:** en curso. Hechos los sub-pasos 1 a 6 (la lista de productos ya se ve en
-> pantalla). Faltan el test del `ProductService` y el cierre.
-
 ## Qué hemos hecho
 
 La aplicación Angular ya muestra el catálogo que devuelve la API:
@@ -15,10 +12,12 @@ La aplicación Angular ya muestra el catálogo que devuelve la API:
   reenvía todo lo que empieza por `/api` a la API .NET en `localhost:5080`. Así
   evitamos CORS.
 - **Modelo `Product`** en TypeScript, que refleja el `ProductResponse` del backend.
-- **`ProductService`** inyectable, que encapsula las llamadas HTTP.
+- **`ProductService`** inyectable (`@Service()`), que encapsula las llamadas HTTP.
 - **Componente `ProductList`** cargado de forma *lazy* en `/products`. Gestiona el
   estado con signals (datos, cargando, error) y pinta una tabla con `@if` y `@for`.
 - **Formato español** (`LOCALE_ID = 'es'`): los precios salen como `1.349,00 €`.
+- **Test del `ProductService`** con `HttpTestingController`: comprueba la petición y
+  la respuesta sin backend real.
 
 Antes de empezar hubo que **renombrar la carpeta del proyecto**: el `#` de
 `proyecto-C#-Angular` impedía arrancar Angular. Detalle en la entrada 08 de
@@ -84,15 +83,17 @@ Navegador ──/api/products──▶ ng serve (:4200) ──reenvía──▶ 
 ### Inyección de dependencias
 
 ```ts
-@Injectable({ providedIn: 'root' })   // singleton para toda la app
+@Service()   // singleton para toda la app
 export class ProductService {
   private readonly http = inject(HttpClient);
 }
 ```
 
-*Es casi idéntica a Spring:* `@Injectable` equivale a `@Service`, `providedIn: 'root'`
-al scope singleton, e `inject()` a la inyección por constructor. La forma antigua
-`constructor(private http: HttpClient)` hace lo mismo.
+*Es casi idéntica a Spring:* `@Service()` (nuevo en Angular 22) equivale a `@Service`
+de Spring: un singleton disponible en toda la app, e `inject()` a la inyección por
+constructor. Hasta Angular 21 se escribía `@Injectable({ providedIn: 'root' })`, que
+sigue funcionando y verás en casi todo el código existente. La forma antigua de
+inyectar, `constructor(private http: HttpClient)`, hace lo mismo que `inject()`.
 
 ### `HttpClient` y Observables
 
@@ -140,6 +141,41 @@ que la leen.
 del template. Hay que añadirla a `imports` (`CurrencyPipe`). Formatea según el
 `LOCALE_ID` de la app.
 
+### Tests de servicios HTTP con `HttpTestingController`
+
+En un test unitario no hay API ni base de datos. `provideHttpClientTesting()` cambia
+la red por un backend falso que se controla desde el test:
+
+```ts
+TestBed.configureTestingModule({
+  providers: [provideHttpClient(), provideHttpClientTesting()],
+});
+const httpMock = TestBed.inject(HttpTestingController);
+
+service.getAll().subscribe((r) => (received = r)); // sale la petición (Observable perezoso)
+const req = httpMock.expectOne('/api/products');    // exige justo una petición a esa URL
+expect(req.request.method).toBe('GET');
+req.flush(products);                                // responde con datos inventados
+expect(received).toEqual(products);
+
+afterEach(() => httpMock.verify()); // falla si queda alguna petición sin responder
+```
+
+| Angular | Spring | React |
+|---|---|---|
+| `TestBed.configureTestingModule` | El contexto de `@SpringBootTest` / `@WebMvcTest` | El *wrapper* de providers en `render()` |
+| `HttpTestingController` | `MockRestServiceServer` | MSW |
+| `expectOne(url)` | `expect(requestTo(url))` | `http.get(url, ...)` en un *handler* |
+| `req.flush(datos)` | `andRespond(withSuccess(...))` | `HttpResponse.json(datos)` |
+| `httpMock.verify()` | `server.verify()` | `onUnhandledRequest: 'error'` |
+
+Los tests corren con **Vitest** (`@angular/build:unit-test`), no con Karma y Jasmine
+como en versiones antiguas. `describe`, `it` y `expect` funcionan igual que en Jest.
+
+Desde Angular 21, `HttpClient` está disponible sin `provideHttpClient()`. Aun así,
+el test debe registrar `provideHttpClientTesting()`; sin él, las peticiones irían a
+la red real (entrada 11 de `AI_REVIEW.md`).
+
 ### Rutas y lazy loading
 
 ```ts
@@ -180,6 +216,7 @@ frontend/
         └── features/products/
             ├── product.ts           ← interfaz Product y tipo ProductCategory
             ├── product-service.ts   ← llamadas a /api/products
+            ├── product-service.spec.ts ← test con HttpTestingController
             └── product-list/        ← componente de la lista
 ```
 
@@ -209,7 +246,13 @@ cd frontend
 npx ng test --watch=false
 ```
 
-Por ahora son 4 tests, los que genera el CLI (con el de `App` adaptado al texto nuevo).
+Son 4 tests: los de `App` y `ProductList` que genera el CLI (el de `App` adaptado al
+texto nuevo) y el de `ProductService`, que comprueba que `getAll()` hace
+`GET /api/products` y devuelve la lista tal cual.
+
+Para ver que el test de verdad comprueba algo, cambia la URL del servicio a
+`/api/productos`: falla con `Expected one matching request for criteria "Match URL:
+/api/products", found none. Requests received are: GET /api/productos.`
 
 ## Decisiones y alternativas
 
@@ -223,6 +266,8 @@ Por ahora son 4 tests, los que genera el CLI (con el de `App` adaptado al texto 
 | `releaseDate` como `string` | JSON no tiene tipo fecha; se convertirá solo al mostrarla | Convertirla a `Date` en el servicio |
 | Servicio que devuelve Observables y estado en el componente con signals | Patrón explícito, parecido a `useState` + `useEffect`, fácil de seguir | `toSignal()` u `httpResource()`, más concisos, que ocultan los estados de carga y error |
 | Solo `getAll()` en el servicio | Los demás métodos llegarán con el formulario del paso 6 | Escribir todo el CRUD por adelantado |
+| `@Service()` en el servicio | Lo recomienda el `CLAUDE.md` del proyecto para servicios nuevos en Angular 22 | `@Injectable({ providedIn: 'root' })`, equivalente y más extendido |
+| Test del servicio con `HttpTestingController` | Comprueba la URL, el método y la respuesta sin levantar el backend | Sustituir `HttpClient` por un *mock* a mano con `vi.fn()`, que no comprueba la petición real |
 | Lazy loading de la lista | Práctica recomendada; carga inicial más ligera | `component: ProductList`, con carga inmediata |
 | `LOCALE_ID = 'es'` | Precios y fechas en formato español | Indicar el locale en cada pipe |
 | Etiquetas semánticas (`header`, `main`, `th scope="col"`) | Accesibilidad: los lectores de pantalla las usan para orientarse | `div` genéricos |
@@ -241,7 +286,7 @@ Por ahora son 4 tests, los que genera el CLI (con el de `App` adaptado al texto 
 > igual detrás de nginx."
 
 > "Los componentes no llaman a HTTP directamente: lo hacen a través de un servicio
-> inyectable, que es un singleton con `providedIn: 'root'`. Es la misma separación que
+> inyectable, que es un singleton con `@Service()`. Es la misma separación que
 > `@Controller` y `@Service` en Spring, y permite sustituir el servicio en los tests."
 
 **Posibles preguntas:**
@@ -267,3 +312,9 @@ Por ahora son 4 tests, los que genera el CLI (con el de `App` adaptado al texto 
   Porque los tipos de TypeScript desaparecen al compilar. La interfaz es una promesa
   sobre la forma del JSON, no una validación. En proyectos grandes se genera desde el
   OpenAPI del backend para que no se desincronice.
+
+- *¿Cómo pruebas un servicio que hace llamadas HTTP?*
+  Con `provideHttpClientTesting()` y `HttpTestingController`. El test se suscribe,
+  comprueba con `expectOne` la URL y el método, responde con `flush` y verifica lo
+  recibido. Al final, `verify()` asegura que no quedan peticiones sin responder. Es
+  como `MockRestServiceServer` en Spring.

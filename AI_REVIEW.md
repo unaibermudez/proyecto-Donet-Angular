@@ -177,7 +177,20 @@ El objetivo no es demostrar que la IA se equivoca, sino demostrar el hábito de
   el decorador **`@Service()`**, nuevo en Angular 22. El asistente no había leído ese
   archivo entero antes de proponer el servicio. Funcionar, funciona: `@Injectable`
   sigue siendo válido.
-- **Cómo se corrigió:** se detectó al documentar el paso. Queda pendiente decidir si
-  se cambia a `@Service()` en el sub-paso 7.
+- **Cómo se corrigió:** se detectó al documentar el paso. En el cierre del paso 5 se
+  cambió a `@Service()`; los tests y la compilación siguieron en verde.
 - **Qué aprendí:** leer las reglas del proyecto (`CLAUDE.md`) antes de generar código,
   sobre todo en un framework que cambia tan rápido como Angular.
+
+### 11 - Predicción equivocada: "el test generado fallará sin `provideHttpClient`"  (paso 5)
+- **Qué se generó:** al explicar el sub-paso 7, el asistente afirmó que el
+  `product-service.spec.ts` creado por `ng generate` estaría fallando con
+  `No provider for HttpClient`, porque el módulo de test estaba vacío.
+- **Qué problema tenía:** era falso. Desde Angular 21, `HttpClient` está disponible
+  por defecto en el inyector raíz sin llamar a `provideHttpClient()`. Al ejecutar
+  `ng test`, los 4 tests pasaron.
+- **Cómo se corrigió:** se ejecutaron los tests antes de tocar nada y se vio que estaban
+  en verde. El test nuevo registra igualmente `provideHttpClient()` y
+  `provideHttpClientTesting()`, porque sin el segundo las peticiones irían a la red real.
+- **Qué aprendí:** comprobar el estado real antes de diagnosticar un fallo, y no
+  dar por buenas reglas de versiones anteriores del framework.
