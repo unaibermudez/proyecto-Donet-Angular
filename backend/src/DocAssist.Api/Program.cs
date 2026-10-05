@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using DocAssist.Api.Data;
+using DocAssist.Api.Features.Documents;
 using DocAssist.Api.Features.Products;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                 SampleData.SeedAsync(context, cancellationToken));
     }
 });
+
+// Documentos subidos: carpeta y tamaño máximo desde la sección DocumentStorage.
+// ValidateOnStart hace que la aplicación no arranque si la configuración no es válida,
+// en vez de fallar con la primera subida.
+builder.Services.AddOptions<DocumentStorageOptions>()
+    .Bind(builder.Configuration.GetSection(DocumentStorageOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddSingleton<IDocumentStorage, LocalDocumentStorage>();
 
 // La comprobación de la base de datos lleva la etiqueta "ready" para que
 // solo la ejecute /health/ready (ver abajo).
@@ -104,6 +114,7 @@ app.MapGet("/api/info", (IConfiguration config, IHostEnvironment env) =>
     .WithSummary("Información básica de la aplicación");
 
 app.MapProductEndpoints();
+app.MapDocumentEndpoints();
 
 app.Run();
 

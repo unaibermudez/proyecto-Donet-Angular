@@ -194,3 +194,15 @@ El objetivo no es demostrar que la IA se equivoca, sino demostrar el hábito de
   `provideHttpClientTesting()`, porque sin el segundo las peticiones irían a la red real.
 - **Qué aprendí:** comprobar el estado real antes de diagnosticar un fallo, y no
   dar por buenas reglas de versiones anteriores del framework.
+
+### 12 - Cálculo de la extensión enrevesado en la validación del frontend  (paso 7)
+- **Qué se generó:** `validateFile` sacaba la extensión con
+  `file.name.slice(file.name.lastIndexOf('.'))` y añadía una segunda condición
+  `!file.name.includes('.')` para tapar el caso de un nombre sin punto.
+- **Qué problema tenía:** sin punto, `lastIndexOf` devuelve -1 y `slice(-1)` da la
+  última letra del nombre. Funcionaba solo gracias a la condición extra, y no se
+  entendía a simple vista por qué hacía falta.
+- **Cómo se corrigió:** al repasar el código, antes de escribir los tests, se calculó la
+  extensión de forma explícita (cadena vacía si no hay punto) y se dejó una sola condición.
+- **Qué aprendí:** si una condición existe solo para tapar un caso raro de la línea
+  anterior, es mejor arreglar la línea anterior.

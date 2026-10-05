@@ -9,9 +9,9 @@ mensaje en formato Conventional Commits, y está subido a GitHub.
 
 ## Progreso
 
-**6 de 12 pasos completados**
+**7 de 12 pasos completados**
 
-`███████████████░░░░░░░░░░░░░░░` 50 %
+`██████████████████░░░░░░░░░░░░` 58 %
 
 ---
 
@@ -135,7 +135,7 @@ con confirmación. Un test de componente con `TestBed`.
 
 ---
 
-### [ ] 7 — Subida de documentos
+### [x] 7 — Subida de documentos
 
 Entidad `Document`, endpoint que acepta ficheros multipart, límites de tamaño y
 tipos permitidos (`.md` y `.pdf`), almacenamiento en disco con ruta
@@ -148,6 +148,8 @@ configurable, y la interfaz de subida en Angular.
 
 **Conceptos nuevos:** `IFormFile`, `multipart/form-data`, relaciones uno a muchos
 en EF Core. *Equivalente a `MultipartFile` en Spring.*
+
+> 📄 [`07-subida-de-documentos.md`](07-subida-de-documentos.md) · 41 tests de backend y 29 de frontend en verde · migración `AddDocuments` aplicada · documentos de ejemplo en `infra/sample-documents/`
 
 ---
 

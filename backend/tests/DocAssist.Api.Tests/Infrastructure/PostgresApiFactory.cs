@@ -16,6 +16,10 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
     private readonly PostgreSqlContainer _postgres =
         new PostgreSqlBuilder("pgvector/pgvector:pg17").Build();
 
+    // Carpeta temporal para los documentos subidos en los tests. Se borra al terminar.
+    public string StoragePath { get; } =
+        Path.Combine(Path.GetTempPath(), "docassist-tests", Guid.NewGuid().ToString("N"));
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Sustituye la cadena de conexión de appsettings.Development.json por la del
@@ -23,7 +27,8 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
         builder.ConfigureAppConfiguration((_, config) =>
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:Default"] = _postgres.GetConnectionString()
+                ["ConnectionStrings:Default"] = _postgres.GetConnectionString(),
+                ["DocumentStorage:RootPath"] = StoragePath
             }));
     }
 
@@ -43,5 +48,10 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
     {
         await base.DisposeAsync();
         await _postgres.DisposeAsync();
+
+        if (Directory.Exists(StoragePath))
+        {
+            Directory.Delete(StoragePath, recursive: true);
+        }
     }
 }

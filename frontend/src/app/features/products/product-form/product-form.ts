@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { validationMessages } from '../../../core/api-errors';
 import { categoryLabels, ProductCategory, ProductRequest } from '../product';
 import { ProductService } from '../product-service';
 import { integer, notMoreThanOneYearAhead } from '../product-validators';
@@ -135,10 +136,10 @@ export class ProductForm implements OnInit {
 }
 
 // Convierte la respuesta de error de la API en mensajes para el usuario.
-// Un 400 trae un ProblemDetails con los errores de validación agrupados por campo.
 function saveErrorMessages(error: HttpErrorResponse): string[] {
-  if (error.status === 400 && error.error?.errors) {
-    return Object.values(error.error.errors as Record<string, string[]>).flat();
+  const messages = validationMessages(error);
+  if (messages.length > 0) {
+    return messages;
   }
   if (error.status === 404) {
     return ['El producto ya no existe. Puede que alguien lo haya borrado.'];

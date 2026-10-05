@@ -1,0 +1,48 @@
+<form (submit)="upload($event)" novalidate>
+  <h3>Subir documento</h3>
+
+  <div class="fields">
+    <div class="field">
+      <label for="file">Fichero (.md o .pdf, máximo {{ maxFileSizeMegabytes }} MB)</label>
+      <input
+        #fileInput
+        id="file"
+        type="file"
+        [accept]="accept"
+        [attr.aria-invalid]="fileError() ? true : null"
+        [attr.aria-describedby]="fileError() ? 'file-error' : null"
+        (change)="onFileSelected($event)"
+      />
+      @if (fileError()) {
+        <p id="file-error" class="field-error">{{ fileError() }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="product">Producto</label>
+      <select id="product" (change)="onProductSelected($event)">
+        <option value="" [selected]="productId() === null">General (sin producto)</option>
+        @for (product of products(); track product.id) {
+          <option [value]="product.id" [selected]="productId() === product.id">
+            {{ product.name }}
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (uploadErrors().length > 0) {
+    <div class="error" role="alert">
+      <p>No se ha podido subir:</p>
+      <ul>
+        @for (message of uploadErrors(); track $index) {
+          <li>{{ message }}</li>
+        }
+      </ul>
+    </div>
+  }
+
+  <button type="submit" class="button button-primary" [disabled]="uploading()">
+    {{ uploading() ? 'Subiendo…' : 'Subir' }}
+  </button>
+</form>

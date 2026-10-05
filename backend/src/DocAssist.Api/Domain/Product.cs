@@ -28,4 +28,7 @@ public class Product
     public int? StorageGb { get; set; }
 
     public decimal? ScreenInches { get; set; }
+
+    // Manuales y otros documentos de este producto (relación uno a muchos).
+    public List<Document> Documents { get; } = [];
 }
