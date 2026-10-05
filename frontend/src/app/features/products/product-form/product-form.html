@@ -1,0 +1,187 @@
+<h2>{{ isEdit() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+@if (loading()) {
+  <p>Cargando producto…</p>
+} @else if (loadError()) {
+  <p class="error" role="alert">{{ loadError() }}</p>
+  <a routerLink="/products">Volver a la lista</a>
+} @else {
+  <!-- novalidate: los mensajes los pone Angular, no los globos del navegador -->
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="grid">
+      <div class="field">
+        <label for="name">Nombre</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          [attr.aria-invalid]="errorFor(form.controls.name) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.name) ? 'name-error' : null"
+        />
+        @if (errorFor(form.controls.name); as message) {
+          <p id="name-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="brand">Marca</label>
+        <input
+          id="brand"
+          type="text"
+          formControlName="brand"
+          [attr.aria-invalid]="errorFor(form.controls.brand) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.brand) ? 'brand-error' : null"
+        />
+        @if (errorFor(form.controls.brand); as message) {
+          <p id="brand-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="model">Modelo</label>
+        <input
+          id="model"
+          type="text"
+          formControlName="model"
+          [attr.aria-invalid]="errorFor(form.controls.model) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.model) ? 'model-error' : null"
+        />
+        @if (errorFor(form.controls.model); as message) {
+          <p id="model-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="category">Categoría</label>
+        <select
+          id="category"
+          formControlName="category"
+          [attr.aria-invalid]="errorFor(form.controls.category) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.category) ? 'category-error' : null"
+        >
+          <option value="" disabled>Elige una categoría</option>
+          @for (category of categories; track category) {
+            <option [value]="category">{{ categoryLabels[category] }}</option>
+          }
+        </select>
+        @if (errorFor(form.controls.category); as message) {
+          <p id="category-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="price">Precio (€)</label>
+        <input
+          id="price"
+          type="number"
+          formControlName="price"
+          step="0.01"
+          inputmode="decimal"
+          [attr.aria-invalid]="errorFor(form.controls.price) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.price) ? 'price-error' : null"
+        />
+        @if (errorFor(form.controls.price); as message) {
+          <p id="price-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="stock">Stock (unidades)</label>
+        <input
+          id="stock"
+          type="number"
+          formControlName="stock"
+          step="1"
+          inputmode="numeric"
+          [attr.aria-invalid]="errorFor(form.controls.stock) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.stock) ? 'stock-error' : null"
+        />
+        @if (errorFor(form.controls.stock); as message) {
+          <p id="stock-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="releaseDate">Fecha de lanzamiento</label>
+        <input
+          id="releaseDate"
+          type="date"
+          formControlName="releaseDate"
+          [attr.aria-invalid]="errorFor(form.controls.releaseDate) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.releaseDate) ? 'releaseDate-error' : null"
+        />
+        @if (errorFor(form.controls.releaseDate); as message) {
+          <p id="releaseDate-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="ramGb">RAM (GB, opcional)</label>
+        <input
+          id="ramGb"
+          type="number"
+          formControlName="ramGb"
+          step="1"
+          inputmode="numeric"
+          [attr.aria-invalid]="errorFor(form.controls.ramGb) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.ramGb) ? 'ramGb-error' : null"
+        />
+        @if (errorFor(form.controls.ramGb); as message) {
+          <p id="ramGb-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="storageGb">Almacenamiento (GB, opcional)</label>
+        <input
+          id="storageGb"
+          type="number"
+          formControlName="storageGb"
+          step="1"
+          inputmode="numeric"
+          [attr.aria-invalid]="errorFor(form.controls.storageGb) ? true : null"
+          [attr.aria-describedby]="errorFor(form.controls.storageGb) ? 'storageGb-error' : null"
+        />
+        @if (errorFor(form.controls.storageGb); as message) {
+          <p id="storageGb-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="screenInches">Pantalla (pulgadas, opcional)</label>
+        <input
+          id="screenInches"
+          type="number"
+          formControlName="screenInches"
+          step="0.1"
+          inputmode="decimal"
+          [attr.aria-invalid]="errorFor(form.controls.screenInches) ? true : null"
+          [attr.aria-describedby]="
+            errorFor(form.controls.screenInches) ? 'screenInches-error' : null
+          "
+        />
+        @if (errorFor(form.controls.screenInches); as message) {
+          <p id="screenInches-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+    </div>
+
+    @if (saveErrors().length > 0) {
+      <div class="error" role="alert">
+        <p>No se ha podido guardar:</p>
+        <ul>
+          @for (message of saveErrors(); track $index) {
+            <li>{{ message }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <div class="actions">
+      <button type="submit" class="button button-primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando…' : 'Guardar' }}
+      </button>
+      <a routerLink="/products" class="button">Cancelar</a>
+    </div>
+  </form>
+}

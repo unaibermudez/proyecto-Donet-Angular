@@ -15,3 +15,13 @@ export interface Product {
   storageGb: number | null;
   screenInches: number | null;
 }
+
+// Lo que se envía en POST y PUT. Refleja ProductRequest del backend (sin id).
+export type ProductRequest = Omit<Product, 'id'>;
+
+// Textos en español para cada categoría. Los usan la lista y el formulario.
+export const categoryLabels: Record<ProductCategory, string> = {
+  Phone: 'Móvil',
+  Computer: 'Ordenador',
+  Console: 'Consola',
+};

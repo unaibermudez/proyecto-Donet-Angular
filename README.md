@@ -138,6 +138,7 @@ y las decisiones tomadas.
 | 03 | [EF Core, PostgreSQL y migraciones](docs/03-ef-core-y-migraciones.md) | `DbContext`, Fluent API, migraciones, *seed*, liveness y readiness |
 | 04 | [CRUD de productos](docs/04-crud-de-productos.md) | Endpoints con `MapGroup`, DTOs, validación de .NET 10, ProblemDetails, logging estructurado, tests |
 | 05 | [Frontend Angular y lista de productos](docs/05-frontend-angular-y-lista.md) | Standalone components, proxy de desarrollo, inyección de dependencias, `HttpClient` y Observables, signals, `@if`/`@for`, lazy loading, tests con `HttpTestingController` |
+| 06 | [Formularios reactivos](docs/06-formularios-reactivos.md) | `FormGroup` tipado, `Validators` y validadores propios, errores accesibles, `input()` desde la ruta, borrado con confirmación, tests de componentes con `TestBed` |
 
 ## Revisión crítica del código generado con IA
 

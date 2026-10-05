@@ -9,9 +9,9 @@ mensaje en formato Conventional Commits, y está subido a GitHub.
 
 ## Progreso
 
-**5 de 12 pasos completados**
+**6 de 12 pasos completados**
 
-`████████████░░░░░░░░░░░░░░░░░░` 42 %
+`███████████████░░░░░░░░░░░░░░░` 50 %
 
 ---
 
@@ -123,13 +123,15 @@ un hook `useProducts`; signals frente a `useState`.*
 
 ---
 
-### [ ] 6 — Formularios reactivos: crear y editar productos
+### [x] 6 — Formularios reactivos: crear y editar productos
 
 Formulario reactivo con validación y mensajes de error, estados de carga, borrado
 con confirmación. Un test de componente con `TestBed`.
 
 **Conceptos nuevos:** `FormGroup`, `FormControl`, `Validators`, `TestBed`.
 *Equivalente a react-hook-form + Zod.*
+
+> 📄 [`06-formularios-reactivos.md`](06-formularios-reactivos.md) · 15 tests en verde (Vitest)
 
 ---
 

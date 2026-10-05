@@ -1,0 +1,52 @@
+form {
+  max-width: 720px;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+label {
+  font-weight: 600;
+}
+
+input,
+select {
+  padding: 0.5rem;
+  font: inherit;
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+}
+
+/* Rojo solo cuando el campo ya enseña su mensaje de error (aria-invalid). */
+[aria-invalid='true'] {
+  border-color: #b91c1c;
+}
+
+.field-error,
+.error {
+  margin: 0;
+  color: #b91c1c;
+}
+
+.error {
+  margin-top: 1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}

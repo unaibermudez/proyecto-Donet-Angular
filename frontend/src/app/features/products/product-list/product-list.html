@@ -1,4 +1,7 @@
-<h2>Productos</h2>
+<div class="toolbar">
+  <h2>Productos</h2>
+  <a routerLink="/products/new" class="button button-primary">Nuevo producto</a>
+</div>
 
 @if (loading()) {
   <p>Cargando productos…</p>
@@ -6,6 +9,10 @@
   <p class="error" role="alert">{{ error() }}</p>
 } @else {
   <p>{{ productCount() }} productos</p>
+
+  @if (deleteError()) {
+    <p class="error" role="alert">{{ deleteError() }}</p>
+  }
 
   <table>
     <thead>
@@ -15,6 +22,7 @@
         <th scope="col">Categoría</th>
         <th scope="col" class="number">Precio</th>
         <th scope="col" class="number">Stock</th>
+        <th scope="col"><span class="visually-hidden">Acciones</span></th>
       </tr>
     </thead>
     <tbody>
@@ -25,10 +33,27 @@
           <td>{{ categoryLabels[product.category] }}</td>
           <td class="number">{{ product.price | currency: 'EUR' }}</td>
           <td class="number">{{ product.stock }}</td>
+          <td class="actions">
+            <a
+              [routerLink]="['/products', product.id, 'edit']"
+              class="button"
+              [attr.aria-label]="'Editar ' + product.name"
+              >Editar</a
+            >
+            <button
+              type="button"
+              class="button button-danger"
+              [disabled]="deletingId() === product.id"
+              [attr.aria-label]="'Borrar ' + product.name"
+              (click)="deleteProduct(product)"
+            >
+              {{ deletingId() === product.id ? 'Borrando…' : 'Borrar' }}
+            </button>
+          </td>
         </tr>
       } @empty {
         <tr>
-          <td colspan="5">No hay productos.</td>
+          <td colspan="6">No hay productos.</td>
         </tr>
       }
     </tbody>
