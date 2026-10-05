@@ -23,6 +23,9 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
     public string StoragePath { get; } =
         Path.Combine(Path.GetTempPath(), "docassist-tests", Guid.NewGuid().ToString("N"));
 
+    // El modelo de chat falso. Público para que los tests vean qué prompt recibió.
+    public FakeChatClient ChatClient { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Sustituye la cadena de conexión de appsettings.Development.json por la del
@@ -39,6 +42,10 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
         {
             services.RemoveAll<IEmbeddingGenerator<string, Embedding<float>>>();
             services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>, FakeEmbeddingGenerator>();
+
+            // Ni del LLM: el chat responde con FakeChatClient.
+            services.RemoveAll<IChatClient>();
+            services.AddSingleton<IChatClient>(ChatClient);
         });
     }
 

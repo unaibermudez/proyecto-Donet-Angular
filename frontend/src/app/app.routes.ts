@@ -32,4 +32,9 @@ export const routes: Routes = [
       import('./features/search/search-page/search-page').then((m) => m.SearchPage),
     title: 'Búsqueda · Tienda Tech',
   },
+  {
+    path: 'chat',
+    loadComponent: () => import('./features/chat/chat-page/chat-page').then((m) => m.ChatPage),
+    title: 'Asistente · Tienda Tech',
+  },
 ];

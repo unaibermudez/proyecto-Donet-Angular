@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using DocAssist.Api.Data;
+using DocAssist.Api.Features.Chat;
 using DocAssist.Api.Features.Documents;
 using DocAssist.Api.Features.Documents.Ingestion;
 using DocAssist.Api.Features.Products;
@@ -92,6 +93,25 @@ builder.Services.AddHostedService<DocumentIngestionWorker>();
 // Búsqueda semántica (scoped: usa el DbContext).
 builder.Services.AddScoped<SemanticSearchService>();
 
+// Chat con RAG. IChatClient es la otra gran abstracción de Microsoft.Extensions.AI;
+// OllamaApiClient también la implementa. Se le da un HttpClient propio para poder
+// alargar el tiempo máximo de espera (un modelo en CPU es lento).
+builder.Services.AddOptions<RagChatOptions>()
+    .Bind(builder.Configuration.GetSection(RagChatOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddChatClient(services =>
+{
+    var ollama = services.GetRequiredService<IOptions<OllamaOptions>>().Value;
+    var httpClient = new HttpClient
+    {
+        BaseAddress = ollama.Endpoint,
+        Timeout = TimeSpan.FromSeconds(ollama.RequestTimeoutSeconds)
+    };
+    return new OllamaApiClient(httpClient, ollama.ChatModel);
+});
+builder.Services.AddScoped<RagChatService>();
+
 // La comprobación de la base de datos lleva la etiqueta "ready" para que
 // solo la ejecute /health/ready (ver abajo).
 builder.Services.AddHealthChecks()
@@ -149,6 +169,7 @@ app.MapGet("/api/info", (IConfiguration config, IHostEnvironment env) =>
 app.MapProductEndpoints();
 app.MapDocumentEndpoints();
 app.MapSearchEndpoints();
+app.MapChatEndpoints();
 
 app.Run();
 

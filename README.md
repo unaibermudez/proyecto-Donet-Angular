@@ -142,6 +142,7 @@ y las decisiones tomadas.
 | 07 | [Subida de documentos](docs/07-subida-de-documentos.md) | `multipart/form-data`, `IFormFile`, validación del contenido, almacenamiento en disco tras una interfaz, options pattern, relación uno a muchos opcional, `output()` y `viewChild` en Angular |
 | 08 | [Ingesta y embeddings](docs/08-ingesta-y-embeddings.md) | Embeddings, troceado con solapamiento, pgvector e índice HNSW, `Microsoft.Extensions.AI` con Ollama, `BackgroundService` y `Channel`, 202 Accepted y polling |
 | 09 | [Búsqueda semántica](docs/09-busqueda-semantica.md) | `POST /api/search`, distancia coseno con pgvector desde EF Core, similitud, limitaciones de los embeddings y búsqueda híbrida, tests con bolsa de palabras |
+| 10 | [Chat con RAG y citas](docs/10-chat-con-rag.md) | RAG y grounding, diseño del prompt y sus reglas, citas verificables, `IChatClient`, streaming con Server-Sent Events, `fetch` + `ReadableStream` en Angular, pruebas con el modelo real |
 
 ## Revisión crítica del código generado con IA
 

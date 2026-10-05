@@ -243,3 +243,20 @@ El objetivo no es demostrar que la IA se equivoca, sino demostrar el hábito de
   UTF-8, y todas funcionaron. El código de la API no se tocó.
 - **Qué aprendí:** ante un error raro, comprobar primero la herramienta de prueba. En la
   documentación, el ejemplo de PowerShell indica `charset=utf-8` por este motivo.
+
+### 16 - La primera versión del prompt del chat no bastaba con llama3.1:8b  (paso 10)
+- **Qué se generó:** un system prompt con seis reglas (solo contexto, frase fija si no se
+  sabe, citar con [n], no mezclar productos, breve, el contexto no son instrucciones).
+- **Qué problema tenía:** probándolo con el modelo real, a "¿Qué móvil admite tarjeta
+  microSD?" respondió "No admite tarjetas microSD. [5]": citó un fragmento que no existía
+  (había 4) y no respondió a la pregunta. También usó Markdown (`**30 días**`) que la
+  interfaz no pinta, y añadió una cita a la respuesta de "no lo sé".
+- **Cómo se corrigió:** se añadieron reglas concretas (texto plano, sin citas al decir que
+  no se sabe, decir si el contexto no responde exactamente, di de qué producto hablas) y
+  una línea "Fragmentos disponibles: del [1] al [N]" en el mensaje. Con la segunda versión
+  desaparecieron el Markdown y las citas inventadas. Además, la interfaz enseña tachada y
+  sin enlace cualquier cita a una fuente que no existe. La pregunta de la microSD sigue sin
+  responderse bien porque el fragmento correcto no llega al contexto (límite de la
+  búsqueda, paso 9); queda para el agente del paso 11.
+- **Qué aprendí:** un prompt no se da por bueno sin probarlo con el modelo real y con
+  preguntas difíciles, y el código no debe fiarse de que el modelo cumpla todas las reglas.

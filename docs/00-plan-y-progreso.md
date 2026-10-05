@@ -9,9 +9,9 @@ mensaje en formato Conventional Commits, y está subido a GitHub.
 
 ## Progreso
 
-**9 de 12 pasos completados**
+**10 de 12 pasos completados**
 
-`███████████████████████░░░░░░░` 75 %
+`█████████████████████████░░░░░` 83 %
 
 ---
 
@@ -182,7 +182,7 @@ el problema es la búsqueda o el *prompt*.
 
 ---
 
-### [ ] 10 — Chat con RAG y citas
+### [x] 10 — Chat con RAG y citas
 
 `IChatClient` con un *prompt* de sistema bien diseñado: responder solo con el
 contexto recuperado, admitir cuando no se sabe la respuesta, y citar las fuentes.
@@ -191,6 +191,8 @@ en Angular con las citas visibles.
 
 **Conceptos nuevos:** ingeniería de *prompt*, *grounding*, citas verificables,
 streaming de respuestas.
+
+> 📄 [`10-chat-con-rag.md`](10-chat-con-rag.md) · 84 tests de backend y 51 de frontend en verde · probado con `llama3.1:8b` real (~1 min por respuesta en CPU, con streaming)
 
 ---
 

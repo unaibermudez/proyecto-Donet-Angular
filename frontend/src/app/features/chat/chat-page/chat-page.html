@@ -1,0 +1,122 @@
+<h2>Asistente</h2>
+
+<p class="intro">
+  Pregunta lo que quieras sobre los productos y las políticas de la tienda. El asistente busca en
+  los documentos, responde solo con lo que encuentra y cita las fuentes. Cada pregunta es
+  independiente: no recuerda las anteriores.
+</p>
+
+@if (turns().length === 0) {
+  <div class="examples">
+    <span>Prueba con:</span>
+    @for (example of exampleQuestions; track example) {
+      <button type="button" class="example" (click)="useExample(example)">{{ example }}</button>
+    }
+  </div>
+}
+
+<ol class="conversation">
+  @for (turn of turns(); track turn.id) {
+    <li class="turn">
+      <p class="question"><span class="visually-hidden">Pregunta: </span>{{ turn.question }}</p>
+
+      <div
+        class="answer"
+        [attr.aria-busy]="turn.status === 'searching' || turn.status === 'answering'"
+      >
+        @switch (turn.status) {
+          @case ('searching') {
+            <p class="status">Buscando en los documentos…</p>
+          }
+          @case ('answering') {
+            @if (!turn.answer) {
+              <p class="status">Pensando… Con el modelo en CPU, la primera palabra puede tardar.</p>
+            }
+          }
+        }
+
+        @if (turn.answer) {
+          <p class="text">
+            @for (segment of splitCitations(turn.answer); track $index) {
+              @if (segment.kind === 'text') {
+                {{ segment.text }}
+              } @else if (segment.number <= turn.citations.length) {
+                <a class="citation" [href]="'#source-' + turn.id + '-' + segment.number"
+                  ><span class="visually-hidden">fuente </span>[{{ segment.number }}]</a
+                >
+              } @else {
+                <!-- El modelo citó un fragmento que no existe: se enseña, pero sin enlace. -->
+                <span class="citation-invalid" title="Esta fuente no existe"
+                  >[{{ segment.number }}]<span class="visually-hidden">
+                    (fuente inexistente)</span
+                  ></span
+                >
+              }
+            }
+          </p>
+        }
+
+        @if (turn.status === 'error') {
+          <p class="error" role="alert">{{ turn.error }}</p>
+        }
+        @if (turn.status === 'cancelled') {
+          <p class="status">Respuesta cancelada.</p>
+        }
+        @if (turn.elapsedMilliseconds !== null) {
+          <p class="elapsed">Respondido en {{ seconds(turn.elapsedMilliseconds) }}</p>
+        }
+
+        @if (turn.citations.length > 0) {
+          <section class="sources" [attr.aria-label]="'Fuentes de la respuesta ' + turn.id">
+            <h3>Fuentes consultadas</h3>
+            <ol>
+              @for (citation of turn.citations; track citation.number) {
+                <li
+                  [id]="'source-' + turn.id + '-' + citation.number"
+                  [class.cited]="isCited(turn, citation)"
+                >
+                  <details>
+                    <summary>
+                      <span class="number">[{{ citation.number }}]</span>
+                      {{ citation.fileName }} · {{ citation.productName ?? 'General' }} ·
+                      {{ percentage(citation.similarity) }}
+                      @if (isCited(turn, citation)) {
+                        <span class="badge">citada</span>
+                      }
+                    </summary>
+                    <p class="excerpt">{{ citation.content }}</p>
+                  </details>
+                </li>
+              }
+            </ol>
+          </section>
+        }
+      </div>
+    </li>
+  }
+</ol>
+
+<p class="visually-hidden" aria-live="polite">{{ announcement() }}</p>
+
+<form [formGroup]="form" (ngSubmit)="ask()" novalidate>
+  <label for="question" class="visually-hidden">Pregunta</label>
+  <input
+    id="question"
+    type="text"
+    formControlName="question"
+    placeholder="Escribe tu pregunta…"
+    autocomplete="off"
+  />
+  <label for="productId" class="visually-hidden">Buscar en</label>
+  <select id="productId" formControlName="productId">
+    <option [ngValue]="null">Todos los documentos</option>
+    @for (product of products(); track product.id) {
+      <option [ngValue]="product.id">{{ product.name }}</option>
+    }
+  </select>
+  @if (busy()) {
+    <button type="button" class="button" (click)="cancel()">Detener</button>
+  } @else {
+    <button type="submit" class="button button-primary" [disabled]="form.invalid">Preguntar</button>
+  }
+</form>

@@ -1,0 +1,180 @@
+.intro {
+  color: #475569;
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.example {
+  padding: 0.25rem 0.6rem;
+  font: inherit;
+  color: #1e3a8a;
+  cursor: pointer;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+}
+
+.example:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.conversation {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.turn {
+  margin-bottom: 1.5rem;
+}
+
+.question {
+  max-width: 75%;
+  margin: 0 0 0.5rem auto;
+  padding: 0.6rem 0.9rem;
+  color: #ffffff;
+  background: #1d4ed8;
+  border-radius: 12px 12px 2px 12px;
+}
+
+.answer {
+  max-width: 85%;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px 12px 12px 2px;
+}
+
+.text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.citation {
+  margin: 0 0.1rem;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.citation:hover,
+.citation:focus-visible {
+  text-decoration: underline;
+}
+
+.status,
+.elapsed {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.elapsed {
+  margin-top: 0.5rem;
+}
+
+.error {
+  margin: 0;
+  color: #b91c1c;
+}
+
+.sources {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sources h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.9rem;
+}
+
+.sources ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.sources li {
+  padding: 0.2rem 0.4rem;
+  color: #475569;
+  border-radius: 4px;
+}
+
+/* Las fuentes que la respuesta cita de verdad se resaltan. */
+.sources li.cited {
+  color: #1e293b;
+  background: #eff6ff;
+}
+
+/* Al pulsar una cita [n], su fuente se marca. */
+.sources li:target {
+  outline: 2px solid #2563eb;
+}
+
+summary {
+  cursor: pointer;
+}
+
+.number {
+  font-weight: 600;
+}
+
+.badge {
+  margin-left: 0.3rem;
+  padding: 0 0.4rem;
+  font-size: 0.8rem;
+  color: #1e40af;
+  background: #dbeafe;
+  border-radius: 999px;
+}
+
+.excerpt {
+  margin: 0.4rem 0 0.2rem;
+  padding: 0.5rem;
+  white-space: pre-wrap;
+  background: #f8fafc;
+  border-radius: 4px;
+}
+
+form {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  background: #f8fafc;
+}
+
+input {
+  flex: 1;
+  min-width: 220px;
+}
+
+input,
+select {
+  padding: 0.55rem;
+  font: inherit;
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+}
+
+/* Cita a un fragmento que no existe (el modelo se ha equivocado). */
+.citation-invalid {
+  margin: 0 0.1rem;
+  font-size: 0.85em;
+  color: #991b1b;
+  text-decoration: line-through;
+}
